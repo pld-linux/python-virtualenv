@@ -37,7 +37,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %doc docs/index.txt
 %{py_sitescriptdir}/virtualenv-%{version}-py*.egg-info
-%{py_sitescriptdir}/virtualenv.py[co]
+%{py_sitescriptdir}/virtualenv.py*
 %attr(755,root,root) %{_bindir}/virtualenv
 %exclude %{py_sitescriptdir}/rebuild-script.py*
 %exclude %{py_sitescriptdir}/refresh-support-files.py*
