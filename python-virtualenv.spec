@@ -1,11 +1,11 @@
 Summary:	Tool to create isolated Python environments
 Name:		python-virtualenv
-Version:	1.3.3
+Version:	1.3.4
 Release:	1
 License:	MIT
 Group:		Development/Languages
 Source0:	http://pypi.python.org/packages/source/v/virtualenv/virtualenv-%{version}.tar.gz
-# Source0-md5:	28e2955aed4ffc4dc3df02dc632b5c42
+# Source0-md5:	77d675df104b90fceec749150bd5014f
 URL:		http://pypi.python.org/pypi/virtualenv
 Requires:	python-setuptools
 BuildArch:	noarch
@@ -41,4 +41,3 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/virtualenv
 %exclude %{py_sitescriptdir}/rebuild-script.py*
 %exclude %{py_sitescriptdir}/refresh-support-files.py*
-%exclude %{py_sitescriptdir}/support-files
