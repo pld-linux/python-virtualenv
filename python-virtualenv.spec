@@ -7,6 +7,10 @@ Group:		Development/Languages
 Source0:	http://pypi.python.org/packages/source/v/virtualenv/virtualenv-%{version}.tar.gz
 # Source0-md5:	979a7adf8467df7df800a45debd2074f
 URL:		http://pypi.python.org/pypi/virtualenv
+BuildRequires:	python
+BuildRequires:	python-devel
+BuildRequires:	python-modules
+BuildRequires:	rpm-pythonprov
 Requires:	python-setuptools
 BuildArch:	noarch
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
