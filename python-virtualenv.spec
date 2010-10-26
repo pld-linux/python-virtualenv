@@ -1,11 +1,11 @@
 Summary:	Tool to create isolated Python environments
 Name:		python-virtualenv
-Version:	1.4.7
-Release:	5
+Version:	1.5.1
+Release:	1
 License:	MIT
 Group:		Development/Languages
 Source0:	http://pypi.python.org/packages/source/v/virtualenv/virtualenv-%{version}.tar.gz
-# Source0-md5:	979a7adf8467df7df800a45debd2074f
+# Source0-md5:	3daa1f449d5d2ee03099484cecb1c2b7
 URL:		http://pypi.python.org/pypi/virtualenv
 BuildRequires:	python
 BuildRequires:	python-devel
