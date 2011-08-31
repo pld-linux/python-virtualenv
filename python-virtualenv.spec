@@ -1,3 +1,7 @@
+#
+# TODO:
+#	- fix --no-site-packages
+#
 Summary:	Tool to create isolated Python environments
 Name:		python-virtualenv
 Version:	1.6.4
