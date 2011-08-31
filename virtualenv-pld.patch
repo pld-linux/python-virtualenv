@@ -2,53 +2,125 @@ diff --git a/virtualenv.py b/virtualenv.py
 index c173dd4..e460b79 100644
 --- a/virtualenv.py
 +++ b/virtualenv.py
-@@ -1045,6 +1045,14 @@ def install_python(home_dir, lib_dir, inc_dir, bin_dir, site_packages, clear):
+@@ -944,7 +944,7 @@
+         inc_dir = join(home_dir, 'include')
+         bin_dir = join(home_dir, 'bin')
+     else:
+-        lib_dir = join(home_dir, 'lib', py_version)
++        lib_dir = join(home_dir, sys.lib, py_version)
+         inc_dir = join(home_dir, 'include', py_version + abiflags)
+         bin_dir = join(home_dir, 'bin')
+     return home_dir, lib_dir, inc_dir, bin_dir
+@@ -1011,7 +1011,6 @@
+     else:
+         prefix = sys.prefix
+     mkdir(lib_dir)
+-    fix_lib64(lib_dir)
+     fix_local_scheme(home_dir)
+     stdlib_dirs = [os.path.dirname(os.__file__)]
+     if sys.platform == 'win32':
+@@ -1045,6 +1045,15 @@ def install_python(home_dir, lib_dir, inc_dir, bin_dir, site_packages, clear):
          site_filename = site_filename.replace('$py.class', '.py')
      site_filename_dst = change_prefix(site_filename, home_dir)
      site_dir = os.path.dirname(site_filename_dst)
 +    # PLD fix
 +    try:
 +        os.symlink(
-+            make_relative_path(join(lib_dir, 'site-packages'), site_dir), 
-+            join(site_dir, 'site-packages')
++            make_relative_path(os.path.join(site_dir, 'site-packages'),
++		    os.path.join(lib_dir, 'site-packages')),
++	    os.path.join(site_dir, 'site-packages')
 +        )
 +    except (OSError, NotImplementedError):
 +        logger.info('Symlinking site-packages failed.')
      writefile(site_filename_dst, SITE_PY)
      writefile(join(site_dir, 'orig-prefix.txt'), prefix)
      site_packages_filename = join(site_dir, 'no-global-site-packages.txt')
-
+@@ -1080,7 +1079,7 @@
+         elif is_jython:
+             exec_dir = join(sys.exec_prefix, 'Lib')
+         else:
+-            exec_dir = join(sys.exec_prefix, 'lib', py_version)
++            exec_dir = join(sys.exec_prefix, sys.lib, py_version)
+         for fn in os.listdir(exec_dir):
+             copyfile(join(exec_dir, fn), join(lib_dir, fn))
+ 
+@@ -1292,22 +1291,6 @@
+             if not os.path.exists(local_path):
+                 os.symlink(os.path.abspath(home_dir), local_path)
+ 
+-def fix_lib64(lib_dir):
+-    """
+-    Some platforms (particularly Gentoo on x64) put things in lib64/pythonX.Y
+-    instead of lib/pythonX.Y.  If this is such a platform we'll just create a
+-    symlink so lib64 points to lib
+-    """
+-    if [p for p in distutils.sysconfig.get_config_vars().values()
+-        if isinstance(p, basestring) and 'lib64' in p]:
+-        logger.debug('This system uses lib64; symlinking lib64 to lib')
+-        assert os.path.basename(lib_dir) == 'python%s' % sys.version[:3], (
+-            "Unexpected python lib dir: %r" % lib_dir)
+-        lib_parent = os.path.dirname(lib_dir)
+-        assert os.path.basename(lib_parent) == 'lib', (
+-            "Unexpected parent dir: %r" % lib_parent)
+-        copyfile(lib_parent, os.path.join(os.path.dirname(lib_parent), 'lib64'))
+-
+ def resolve_interpreter(exe):
+     """
+     If the executable given isn't an absolute path, search $PATH for the interpreter
 diff --git a/virtualenv_support/site.py b/virtualenv_support/site.py
 index 3f4585a..4c52afe 100644
 --- a/virtualenv_support/site.py
 +++ b/virtualenv_support/site.py
-@@ -234,7 +234,8 @@ def addsitepackages(known_paths, sys_prefix=sys.prefix, exec_prefix=sys.exec_pre
+@@ -230,29 +230,21 @@
+ 
+             elif os.sep == '/':
+                 sitedirs = [os.path.join(prefix,
+-                                         "lib",
++                                         sys.lib,
                                           "python" + sys.version[:3],
                                           "site-packages"),
-                             os.path.join(prefix, "lib", "site-python"),
--                            os.path.join(prefix, "python" + sys.version[:3], "lib-dynload")]
-+                            os.path.join(prefix, "python" + sys.version[:3], "lib-dynload"),
-+                            os.path.join(prefix, "lib64", "python" + sys.version[:3], "lib-dynload")]
-                 lib64_dir = os.path.join(prefix, "lib64", "python" + sys.version[:3], "site-packages")
-                 if (os.path.exists(lib64_dir) and 
-                     os.path.realpath(lib64_dir) not in [os.path.realpath(p) for p in sitedirs]):
-@@ -253,6 +254,9 @@ def addsitepackages(known_paths, sys_prefix=sys.prefix, exec_prefix=sys.exec_pre
-                                              "python" + sys.version[:3],
-                                              "dist-packages"))
-                 sitedirs.append(os.path.join(prefix, "lib", "dist-python"))
-+                # PLD fix
+-                            os.path.join(prefix, "lib", "site-python"),
++                            os.path.join(prefix, sys.lib, "site-python"),
++                            os.path.join(prefix, sys.lib, "python" + sys.version[:3], "lib-dynload"),
+                             os.path.join(prefix, "python" + sys.version[:3], "lib-dynload")]
+-                lib64_dir = os.path.join(prefix, "lib64", "python" + sys.version[:3], "site-packages")
+-                if (os.path.exists(lib64_dir) and 
+-                    os.path.realpath(lib64_dir) not in [os.path.realpath(p) for p in sitedirs]):
+-                    sitedirs.append(lib64_dir)
+                 try:
+                     # sys.getobjects only available in --with-pydebug build
+                     sys.getobjects
+                     sitedirs.insert(0, os.path.join(sitedirs[0], 'debug'))
+                 except AttributeError:
+                     pass
+-                # Debian-specific dist-packages directories:
+-                sitedirs.append(os.path.join(prefix, "lib",
+-                                             "python" + sys.version[:3],
+-                                             "dist-packages"))
+-                sitedirs.append(os.path.join(prefix, "local/lib",
+-                                             "python" + sys.version[:3],
+-                                             "dist-packages"))
+-                sitedirs.append(os.path.join(prefix, "lib", "dist-python"))
++                # PLD-specific dist-packages directories:
 +                sitedirs.append(os.path.join(prefix, "share",
 +                                             "python" + sys.version[:3]))
              else:
                  sitedirs = [prefix, os.path.join(prefix, "lib", "site-packages")]
              if sys.platform == 'darwin':
-@@ -568,7 +572,8 @@ def virtual_install_main_packages():
+@@ -568,13 +559,14 @@
              if os.path.exists(plat_path):
                  paths.append(plat_path)
      else:
 -        paths = [os.path.join(sys.real_prefix, 'lib', 'python'+sys.version[:3])]
-+        paths = [os.path.join(sys.real_prefix, 'lib', 'python'+sys.version[:3]),
-+                 os.path.join(sys.real_prefix, 'share', 'python'+sys.version[:3])]
++        paths = [os.path.join(sys.real_prefix, sys.lib, 'python'+sys.version[:3]),
++		 os.path.join(sys.real_prefix, 'share', 'python'+sys.version[:3])]
          hardcoded_relative_dirs = paths[:] # for the special 'darwin' case below
          lib64_path = os.path.join(sys.real_prefix, 'lib64', 'python'+sys.version[:3])
          if os.path.exists(lib64_path):
+             paths.append(lib64_path)
+         # This is hardcoded in the Python executable, but relative to sys.prefix:
+-        plat_path = os.path.join(sys.real_prefix, 'lib', 'python'+sys.version[:3],
++        plat_path = os.path.join(sys.real_prefix, sys.lib, 'python'+sys.version[:3],
+                                  'plat-%s' % sys.platform)
+         if os.path.exists(plat_path):
+             paths.append(plat_path)
