@@ -2,6 +2,18 @@ diff --git a/virtualenv.py b/virtualenv.py
 index c173dd4..e460b79 100644
 --- a/virtualenv.py
 +++ b/virtualenv.py
+@@ -56,7 +56,10 @@
+                     'fnmatch', 'locale', 'encodings', 'codecs',
+                     'stat', 'UserDict', 'readline', 'copy_reg', 'types',
+                     're', 'sre', 'sre_parse', 'sre_constants', 'sre_compile',
+-                    'zlib']
++                    'zlib', 'time', 'cStringIO', 'md5', '_hashlib', '_struct',
++                    '_collections', 'operator', 'itertools', 'math', 'binascii', 
++                    '_random', '_io', '_functools', 'array', '_socket']
++
+ 
+ REQUIRED_FILES = ['lib-dynload', 'config']
+ 
 @@ -944,7 +944,7 @@
          inc_dir = join(home_dir, 'include')
          bin_dir = join(home_dir, 'bin')
