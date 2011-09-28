@@ -1,11 +1,7 @@
-#
-# TODO:
-#	- fix --no-site-packages
-#
 Summary:	Tool to create isolated Python environments
 Name:		python-virtualenv
 Version:	1.6.4
-Release:	0.1
+Release:	1
 License:	MIT
 Group:		Development/Languages
 Source0:	http://pypi.python.org/packages/source/v/virtualenv/virtualenv-%{version}.tar.gz
