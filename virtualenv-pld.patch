@@ -9,8 +9,8 @@ index c173dd4..e460b79 100644
 -                    'zlib']
 +                    'zlib', 'time', 'cStringIO', 'md5', '_hashlib', '_struct',
 +                    '_collections', 'operator', 'itertools', 'math', 'binascii', 
-+                    '_random', '_io', '_functools', 'array', '_socket']
-+
++                    '_random', '_io', '_functools', 'array', '_socket', 'select',
++                    'fcntl', 'cPickle', 'datetime', 'syslog', '_sqlite3', 'unicodedata']
  
  REQUIRED_FILES = ['lib-dynload', 'config']
  
