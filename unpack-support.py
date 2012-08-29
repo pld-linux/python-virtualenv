@@ -19,5 +19,5 @@ f.close()
 match = None
 for match in file_regex.finditer(content):
 	f = open(os.path.join('virtualenv_support', match.group(1)), 'wb')
-	f.write(eval("virtualenv." + match.group(2)))
+	f.write(eval("virtualenv." + match.group(2)).encode('utf-8'))
 	f.close()
