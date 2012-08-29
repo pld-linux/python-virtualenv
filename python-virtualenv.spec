@@ -49,6 +49,10 @@ rm -rf $RPM_BUILD_ROOT
 	--optimize=2 \
 	--root=$RPM_BUILD_ROOT
 
+# not needed
+rm $RPM_BUILD_ROOT%{_bindir}/virtualenv-*.*
+rm $RPM_BUILD_ROOT%{py_sitescriptdir}/virtualenv_support/[ades]*.py*
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -59,6 +63,6 @@ rm -rf $RPM_BUILD_ROOT
 %{py_sitescriptdir}/virtualenv-%{version}-py*.egg-info
 %{py_sitescriptdir}/virtualenv.py*
 %dir %{py_sitescriptdir}/virtualenv_support
-%{py_sitescriptdir}/virtualenv_support/*.py*
+%{py_sitescriptdir}/virtualenv_support/__init__.py*
 %{py_sitescriptdir}/virtualenv_support/*.gz
 %{py_sitescriptdir}/virtualenv_support/setuptools-*.egg
