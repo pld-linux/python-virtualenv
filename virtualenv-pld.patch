@@ -1,8 +1,6 @@
-diff --git a/virtualenv.py b/virtualenv.py
-index c173dd4..e460b79 100644
---- a/virtualenv.py
-+++ b/virtualenv.py
-@@ -56,7 +56,10 @@
+--- virtualenv-1.8.4/virtualenv.py.orig	2012-11-25 18:11:26.000000000 +0100
++++ virtualenv-1.8.4/virtualenv.py	2013-01-11 18:31:34.212018758 +0100
+@@ -72,7 +72,10 @@
                      'fnmatch', 'locale', 'encodings', 'codecs',
                      'stat', 'UserDict', 'readline', 'copy_reg', 'types',
                      're', 'sre', 'sre_parse', 'sre_constants', 'sre_compile',
@@ -13,25 +11,37 @@ index c173dd4..e460b79 100644
 +                    'fcntl', 'cPickle', 'datetime', 'syslog', '_sqlite3', 'unicodedata']
  
  REQUIRED_FILES = ['lib-dynload', 'config']
-
-@@ -1089,7 +1089,7 @@
+ 
+@@ -1118,18 +1121,8 @@
          inc_dir = join(home_dir, 'include')
          bin_dir = join(home_dir, 'bin')
-     elif sys.platform != 'win32':
+     elif not is_win:
 -        lib_dir = join(home_dir, 'lib', py_version)
+-        multiarch_exec = '/usr/bin/multiarch-platform'
+-        if is_executable_file(multiarch_exec):
+-            # In Mageia (2) and Mandriva distros the include dir must be like:
+-            # virtualenv/include/multiarch-x86_64-linux/python2.7
+-            # instead of being virtualenv/include/python2.7
+-            p = subprocess.Popen(multiarch_exec, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+-            stdout, stderr = p.communicate()
+-            # stdout.strip is needed to remove newline character
+-            inc_dir = join(home_dir, 'include', stdout.strip(), py_version + abiflags)
+-        else:
+-            inc_dir = join(home_dir, 'include', py_version + abiflags)
 +        lib_dir = join(home_dir, sys.lib, py_version)
-         inc_dir = join(home_dir, 'include', py_version + abiflags)
++        inc_dir = join(home_dir, 'include', py_version + abiflags)
          bin_dir = join(home_dir, 'bin')
      return home_dir, lib_dir, inc_dir, bin_dir
-@@ -1167,7 +1167,6 @@
+ 
+@@ -1234,7 +1227,6 @@
      else:
          prefix = sys.prefix
      mkdir(lib_dir)
 -    fix_lib64(lib_dir)
      stdlib_dirs = [os.path.dirname(os.__file__)]
-     if sys.platform == 'win32':
+     if is_win:
          stdlib_dirs.append(join(os.path.dirname(stdlib_dirs[0]), 'DLLs'))
-@@ -1045,6 +1045,15 @@ def install_python(home_dir, lib_dir, inc_dir, bin_dir, site_packages, clear):
+@@ -1267,6 +1259,15 @@
          site_filename = site_filename.replace('$py.class', '.py')
      site_filename_dst = change_prefix(site_filename, home_dir)
      site_dir = os.path.dirname(site_filename_dst)
@@ -47,7 +57,7 @@ index c173dd4..e460b79 100644
      writefile(site_filename_dst, SITE_PY)
      writefile(join(site_dir, 'orig-prefix.txt'), prefix)
      site_packages_filename = join(site_dir, 'no-global-site-packages.txt')
-@@ -1080,7 +1079,7 @@
+@@ -1304,7 +1305,7 @@
          elif is_jython:
              exec_dir = join(sys.exec_prefix, 'Lib')
          else:
@@ -56,9 +66,9 @@ index c173dd4..e460b79 100644
          for fn in os.listdir(exec_dir):
              copyfile(join(exec_dir, fn), join(lib_dir, fn))
  
-@@ -1292,22 +1291,6 @@
-             if not os.path.exists(local_path):
-                 os.symlink(os.path.abspath(home_dir), local_path)
+@@ -1616,27 +1617,6 @@
+                     os.symlink(os.path.abspath(os.path.join(home_dir, subdir_name)), \
+                                                             os.path.join(local_path, subdir_name))
  
 -def fix_lib64(lib_dir):
 -    """
@@ -72,18 +82,21 @@ index c173dd4..e460b79 100644
 -        assert os.path.basename(lib_dir) == 'python%s' % sys.version[:3], (
 -            "Unexpected python lib dir: %r" % lib_dir)
 -        lib_parent = os.path.dirname(lib_dir)
+-        top_level = os.path.dirname(lib_parent)
+-        lib_dir = os.path.join(top_level, 'lib')
+-        lib64_link = os.path.join(top_level, 'lib64')
 -        assert os.path.basename(lib_parent) == 'lib', (
 -            "Unexpected parent dir: %r" % lib_parent)
--        copyfile(lib_parent, os.path.join(os.path.dirname(lib_parent), 'lib64'))
+-        if os.path.lexists(lib64_link):
+-            return
+-        os.symlink('lib', lib64_link)
 -
  def resolve_interpreter(exe):
      """
      If the executable given isn't an absolute path, search $PATH for the interpreter
-diff --git a/virtualenv_support/site.py b/virtualenv_support/site.py
-index 3f4585a..4c52afe 100644
---- a/virtualenv_support/site.py
-+++ b/virtualenv_support/site.py
-@@ -225,39 +225,25 @@
+--- virtualenv-1.8.4/virtualenv_support/site.py.orig	2013-01-11 17:58:03.708727329 +0100
++++ virtualenv-1.8.4/virtualenv_support/site.py	2013-01-11 18:39:25.132008943 +0100
+@@ -225,42 +225,25 @@
                                  os.path.join(prefix, "Extras", "lib", "python")]
  
                  else: # any other Python distros on OSX work this way
@@ -103,7 +116,10 @@ index 3f4585a..4c52afe 100644
 -                lib64_dir = os.path.join(prefix, "lib64", "python" + sys.version[:3], "site-packages")
 -                if (os.path.exists(lib64_dir) and 
 -                    os.path.realpath(lib64_dir) not in [os.path.realpath(p) for p in sitedirs]):
--                    sitedirs.append(lib64_dir)
+-                    if sys.maxsize > 2**32:
+-                        sitedirs.insert(0, lib64_dir)
+-                    else:
+-                        sitedirs.append(lib64_dir)
                  try:
                      # sys.getobjects only available in --with-pydebug build
                      sys.getobjects
@@ -123,23 +139,26 @@ index 3f4585a..4c52afe 100644
 -                                             "python" + sys.version[:3],
 -                                             "dist-packages"))
 -                sitedirs.append(os.path.join(prefix, "lib", "dist-python"))
-+                # PLD-specific dist-packages directories:
++                # PLD-specific noarch directory:
 +                sitedirs.append(os.path.join(prefix, "share",
 +                        "python" + sys.version[:3]))
              else:
                  sitedirs = [prefix, os.path.join(prefix, "lib", "site-packages")]
              if sys.platform == 'darwin':
-@@ -568,13 +559,14 @@
-             if os.path.exists(plat_path):
-                 paths.append(plat_path)
+@@ -576,16 +559,11 @@
+     elif sys.platform == 'win32':
+         paths = [os.path.join(sys.real_prefix, 'Lib'), os.path.join(sys.real_prefix, 'DLLs')]
      else:
 -        paths = [os.path.join(sys.real_prefix, 'lib', 'python'+sys.version[:3])]
 +        paths = [os.path.join(sys.real_prefix, sys.lib, 'python'+sys.version[:3]),
-+		 os.path.join(sys.real_prefix, 'share', 'python'+sys.version[:3])]
++		os.path.join(sys.real_prefix, 'share', 'python'+sys.version[:3])]
          hardcoded_relative_dirs = paths[:] # for the special 'darwin' case below
-         lib64_path = os.path.join(sys.real_prefix, 'lib64', 'python'+sys.version[:3])
-         if os.path.exists(lib64_path):
-             paths.append(lib64_path)
+-        lib64_path = os.path.join(sys.real_prefix, 'lib64', 'python'+sys.version[:3])
+-        if os.path.exists(lib64_path):
+-            if sys.maxsize > 2**32:
+-                paths.insert(0, lib64_path)
+-            else:
+-                paths.append(lib64_path)
          # This is hardcoded in the Python executable, but relative to sys.prefix:
 -        plat_path = os.path.join(sys.real_prefix, 'lib', 'python'+sys.version[:3],
 +        plat_path = os.path.join(sys.real_prefix, sys.lib, 'python'+sys.version[:3],

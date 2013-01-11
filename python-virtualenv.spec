@@ -1,16 +1,17 @@
 Summary:	Tool to create isolated Python environments
+Summary(pl.UTF-8):	Narzędzie do tworzenia oddzielonych środowisk Pythona
 Name:		python-virtualenv
-Version:	1.7.2
+Version:	1.8.4
 Release:	1
 License:	MIT
 Group:		Development/Languages
 Source0:	http://pypi.python.org/packages/source/v/virtualenv/virtualenv-%{version}.tar.gz
-# Source0-md5:	b5d63b05373a4344ae099a68875aae78
+# Source0-md5:	1c7e56a7f895b2e71558f96e365ee7a7
 Source1:	https://raw.github.com/pypa/virtualenv/%{version}/bin/rebuild-script.py
 # Source1-md5:	b9748dcf1c81dc85a8368dcb7c680494
 Source2:	unpack-support.py
-URL:		http://pypi.python.org/pypi/virtualenv
 Patch0:		virtualenv-pld.patch
+URL:		http://pypi.python.org/pypi/virtualenv
 BuildRequires:	python
 BuildRequires:	python-modules
 BuildRequires:	rpm-pythonprov
@@ -28,17 +29,23 @@ virtual-python. It is written by Ian Bicking, and sponsored by the
 Open Planning Project. It is licensed under an MIT-style permissive
 license.
 
+%description -l pl.UTF-8
+virtualenv to narzędzie do tworzenia oddzielonych środowisk Pythona.
+Jest to następca workignenv i rozszerzenie virtual-pythona. Jest
+tworzone przez Iana Bickinga i sponsorowane przez Open Planning
+Project. Zostało wydane na liberalnej licencji w stylu MIT.
+
 %prep
 %setup -q -n virtualenv-%{version}
 %{__install} -d bin
 %{__install} -m 755 -p %{SOURCE1} bin/
 %{__install} -m 755 -p %{SOURCE2} bin/
 
-python ./bin/unpack-support.py
+%{__python} ./bin/unpack-support.py
 
 %patch0 -p1
 
-python ./bin/rebuild-script.py
+%{__python} ./bin/rebuild-script.py
 
 %build
 %{__python} setup.py build
@@ -50,8 +57,8 @@ rm -rf $RPM_BUILD_ROOT
 	--root=$RPM_BUILD_ROOT
 
 # not needed
-rm $RPM_BUILD_ROOT%{_bindir}/virtualenv-*.*
-rm $RPM_BUILD_ROOT%{py_sitescriptdir}/virtualenv_support/[ades]*.py*
+%{__rm} $RPM_BUILD_ROOT%{_bindir}/virtualenv-*.*
+%{__rm} $RPM_BUILD_ROOT%{py_sitescriptdir}/virtualenv_support/[ades]*.py*
 
 %clean
 rm -rf $RPM_BUILD_ROOT
