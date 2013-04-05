@@ -96,7 +96,7 @@
      If the executable given isn't an absolute path, search $PATH for the interpreter
 --- virtualenv-1.8.4/virtualenv_support/site.py.orig	2013-01-11 17:58:03.708727329 +0100
 +++ virtualenv-1.8.4/virtualenv_support/site.py	2013-01-11 18:39:25.132008943 +0100
-@@ -225,42 +225,25 @@
+@@ -226,42 +226,25 @@
                                  os.path.join(prefix, "Extras", "lib", "python")]
  
                  else: # any other Python distros on OSX work this way
@@ -114,9 +114,9 @@
 +                            os.path.join(prefix, sys.lib, "site-python"),
                              os.path.join(prefix, "python" + sys.version[:3], "lib-dynload")]
 -                lib64_dir = os.path.join(prefix, "lib64", "python" + sys.version[:3], "site-packages")
--                if (os.path.exists(lib64_dir) and 
+-                if (os.path.exists(lib64_dir) and
 -                    os.path.realpath(lib64_dir) not in [os.path.realpath(p) for p in sitedirs]):
--                    if sys.maxsize > 2**32:
+-                    if _is_64bit:
 -                        sitedirs.insert(0, lib64_dir)
 -                    else:
 -                        sitedirs.append(lib64_dir)
@@ -145,23 +145,29 @@
              else:
                  sitedirs = [prefix, os.path.join(prefix, "lib", "site-packages")]
              if sys.platform == 'darwin':
-@@ -576,16 +559,11 @@
+@@ -577,14 +560,9 @@
      elif sys.platform == 'win32':
          paths = [os.path.join(sys.real_prefix, 'Lib'), os.path.join(sys.real_prefix, 'DLLs')]
      else:
 -        paths = [os.path.join(sys.real_prefix, 'lib', 'python'+sys.version[:3])]
 +        paths = [os.path.join(sys.real_prefix, sys.lib, 'python'+sys.version[:3]),
-+		os.path.join(sys.real_prefix, 'share', 'python'+sys.version[:3])]
++                os.path.join(sys.real_prefix, 'share', 'python'+sys.version[:3])]
          hardcoded_relative_dirs = paths[:] # for the special 'darwin' case below
 -        lib64_path = os.path.join(sys.real_prefix, 'lib64', 'python'+sys.version[:3])
 -        if os.path.exists(lib64_path):
--            if sys.maxsize > 2**32:
+-            if _is_64bit:
 -                paths.insert(0, lib64_path)
 -            else:
 -                paths.append(lib64_path)
-         # This is hardcoded in the Python executable, but relative to sys.prefix:
--        plat_path = os.path.join(sys.real_prefix, 'lib', 'python'+sys.version[:3],
-+        plat_path = os.path.join(sys.real_prefix, sys.lib, 'python'+sys.version[:3],
-                                  'plat-%s' % sys.platform)
+         # This is hardcoded in the Python executable, but relative to
+         # sys.prefix.  Debian change: we need to add the multiarch triplet
+         # here, which is where the real stuff lives.  As per PEP 421, in
+@@ -595,7 +573,7 @@
+         except AttributeError:
+             # This is a non-multiarch aware Python.  Fallback to the old way.
+             arch = sys.platform
+-        plat_path = os.path.join(sys.real_prefix, 'lib',
++        plat_path = os.path.join(sys.real_prefix, sys.lib,
+                                  'python'+sys.version[:3],
+                                  'plat-%s' % arch)
          if os.path.exists(plat_path):
-             paths.append(plat_path)
