@@ -7,7 +7,7 @@
 -                    'zlib']
 +                    'zlib', 'time', 'cStringIO', 'md5', '_hashlib', '_struct',
 +                    '_collections', 'operator', 'itertools', 'math', 'binascii', 
-+                    '_random', '_io', '_functools', 'array', '_socket', 'select',
++                    '_random', '_io', '_functools', 'array', '_socket', '_ssl', 'select',
 +                    'fcntl', 'cPickle', 'datetime', 'syslog', '_sqlite3', 'unicodedata', 'parser', 'simplejson']
  
  REQUIRED_FILES = ['lib-dynload', 'config']
