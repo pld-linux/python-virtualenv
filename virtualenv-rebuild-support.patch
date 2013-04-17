@@ -1,0 +1,12 @@
+--- virtualenv-1.8.4/bin/rebuild-script.py	2011-08-31 12:30:48.000000000 +0200
++++ virtualenv-1.9.1/bin/rebuild-script.py	2013-04-05 20:06:30.000000000 +0200
+@@ -29,7 +29,7 @@
+         varname = match.group(2)
+         data = match.group(3)
+         print('Found reference to file %s' % filename)
+-        pathname = os.path.join(here, '..', 'virtualenv_embedded', filename)
++        pathname = os.path.join(here, '..', 'virtualenv_support', filename)
+         f = open(pathname, 'rb')
+         c = f.read()
+         f.close()
+
