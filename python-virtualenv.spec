@@ -2,7 +2,7 @@ Summary:	Tool to create isolated Python environments
 Summary(pl.UTF-8):	Narzędzie do tworzenia oddzielonych środowisk Pythona
 Name:		python-virtualenv
 Version:	1.9.1
-Release:	2
+Release:	3
 License:	MIT
 Group:		Development/Languages
 Source0:	http://pypi.python.org/packages/source/v/virtualenv/virtualenv-%{version}.tar.gz
@@ -22,6 +22,8 @@ Requires:	python-setuptools
 Requires:	python-devel-src
 BuildArch:	noarch
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
+
+%define		_noautoprov	'pythonegg\\(setuptools\\)'
 
 %description
 virtualenv is a tool to create isolated Python environments.
