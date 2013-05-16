@@ -1,18 +1,19 @@
 --- virtualenv-1.8.4/virtualenv.py.orig	2012-11-25 18:11:26.000000000 +0100
 +++ virtualenv-1.8.4/virtualenv.py	2013-01-11 18:31:34.212018758 +0100
-@@ -72,7 +72,10 @@
+@@ -72,7 +72,11 @@
                      'fnmatch', 'locale', 'encodings', 'codecs',
                      'stat', 'UserDict', 'readline', 'copy_reg', 'types',
                      're', 'sre', 'sre_parse', 'sre_constants', 'sre_compile',
 -                    'zlib']
-+                    'zlib', 'time', 'cStringIO', 'md5', '_hashlib', '_struct',
++                    'zlib', 'time', 'cStringIO', 'md5', '_hashlib', '_struct', 'bz2',
 +                    '_collections', 'operator', 'itertools', 'math', 'binascii', 
 +                    '_random', '_io', '_functools', 'array', '_socket', '_ssl', 'select',
-+                    'fcntl', 'cPickle', 'datetime', 'syslog', '_sqlite3', 'unicodedata', 'parser', 'simplejson']
++                    'fcntl', 'cPickle', 'datetime', 'syslog', '_sqlite3', 'unicodedata',
++                    'parser', 'simplejson', 'multiprocessing', '_multiprocessing']
  
  REQUIRED_FILES = ['lib-dynload', 'config']
  
-@@ -1118,18 +1121,8 @@
+@@ -1118,18 +1122,8 @@
          inc_dir = join(home_dir, 'include')
          bin_dir = join(home_dir, 'bin')
      elif not is_win:
@@ -33,7 +34,7 @@
          bin_dir = join(home_dir, 'bin')
      return home_dir, lib_dir, inc_dir, bin_dir
  
-@@ -1234,7 +1227,6 @@
+@@ -1234,7 +1228,6 @@
      else:
          prefix = sys.prefix
      mkdir(lib_dir)
@@ -41,7 +42,7 @@
      stdlib_dirs = [os.path.dirname(os.__file__)]
      if is_win:
          stdlib_dirs.append(join(os.path.dirname(stdlib_dirs[0]), 'DLLs'))
-@@ -1267,6 +1259,15 @@
+@@ -1267,6 +1260,15 @@
          site_filename = site_filename.replace('$py.class', '.py')
      site_filename_dst = change_prefix(site_filename, home_dir)
      site_dir = os.path.dirname(site_filename_dst)
@@ -57,7 +58,7 @@
      writefile(site_filename_dst, SITE_PY)
      writefile(join(site_dir, 'orig-prefix.txt'), prefix)
      site_packages_filename = join(site_dir, 'no-global-site-packages.txt')
-@@ -1304,7 +1305,7 @@
+@@ -1304,7 +1306,7 @@
          elif is_jython:
              exec_dir = join(sys.exec_prefix, 'Lib')
          else:
@@ -66,7 +67,7 @@
          for fn in os.listdir(exec_dir):
              copyfile(join(exec_dir, fn), join(lib_dir, fn))
  
-@@ -1616,27 +1617,6 @@
+@@ -1616,27 +1618,6 @@
                      os.symlink(os.path.abspath(os.path.join(home_dir, subdir_name)), \
                                                              os.path.join(local_path, subdir_name))
  
