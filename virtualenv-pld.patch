@@ -6,10 +6,10 @@
                      're', 'sre', 'sre_parse', 'sre_constants', 'sre_compile',
 -                    'zlib']
 +                    'zlib', 'time', 'cStringIO', 'md5', '_hashlib', '_struct', 'bz2',
-+                    '_collections', 'operator', 'itertools', 'math', 'binascii', 
++                    '_collections', 'operator', 'itertools', 'math', 'binascii', 'atexit',
 +                    '_random', '_io', '_functools', 'array', '_socket', '_ssl', 'select',
 +                    'fcntl', 'cPickle', 'datetime', 'syslog', '_sqlite3', 'unicodedata',
-+                    'parser', 'simplejson', 'multiprocessing', '_multiprocessing']
++                    'parser', 'simplejson', 'multiprocessing', '_multiprocessing', '_posixsubprocess']
  
  REQUIRED_FILES = ['lib-dynload', 'config']
  
@@ -38,7 +38,7 @@
      else:
          prefix = sys.prefix
      mkdir(lib_dir)
--    fix_lib64(lib_dir)
+-    fix_lib64(lib_dir, symlink)
      stdlib_dirs = [os.path.dirname(os.__file__)]
      if is_win:
          stdlib_dirs.append(join(os.path.dirname(stdlib_dirs[0]), 'DLLs'))
@@ -67,11 +67,11 @@
          for fn in os.listdir(exec_dir):
              copyfile(join(exec_dir, fn), join(lib_dir, fn))
  
-@@ -1616,27 +1618,6 @@
-                     os.symlink(os.path.abspath(os.path.join(home_dir, subdir_name)), \
+@@ -1616,35 +1618,6 @@
+                     cp_or_ln(os.path.abspath(os.path.join(home_dir, subdir_name)), \
                                                              os.path.join(local_path, subdir_name))
  
--def fix_lib64(lib_dir):
+-def fix_lib64(lib_dir, symlink=True):
 -    """
 -    Some platforms (particularly Gentoo on x64) put things in lib64/pythonX.Y
 -    instead of lib/pythonX.Y.  If this is such a platform we'll just create a
@@ -79,7 +79,14 @@
 -    """
 -    if [p for p in distutils.sysconfig.get_config_vars().values()
 -        if isinstance(p, basestring) and 'lib64' in p]:
+-        # PyPy's library path scheme is not affected by this.
+-        # Return early or we will die on the following assert.
+-        if is_pypy:
+-            logger.debug('PyPy detected, skipping lib64 symlinking')
+-            return
+-
 -        logger.debug('This system uses lib64; symlinking lib64 to lib')
+-
 -        assert os.path.basename(lib_dir) == 'python%s' % sys.version[:3], (
 -            "Unexpected python lib dir: %r" % lib_dir)
 -        lib_parent = os.path.dirname(lib_dir)
@@ -90,7 +97,8 @@
 -            "Unexpected parent dir: %r" % lib_parent)
 -        if os.path.lexists(lib64_link):
 -            return
--        os.symlink('lib', lib64_link)
+-        cp_or_ln = (os.symlink if symlink else copyfile)
+-        cp_or_ln('lib', lib64_link)
 -
  def resolve_interpreter(exe):
      """

@@ -1,12 +1,12 @@
 Summary:	Tool to create isolated Python environments
 Summary(pl.UTF-8):	Narzędzie do tworzenia oddzielonych środowisk Pythona
 Name:		python-virtualenv
-Version:	1.9.1
-Release:	4
+Version:	1.10.1
+Release:	1
 License:	MIT
 Group:		Development/Languages
 Source0:	http://pypi.python.org/packages/source/v/virtualenv/virtualenv-%{version}.tar.gz
-# Source0-md5:	07e09df0adfca0b2d487e39a4bf2270a
+# Source0-md5:	3a04aa2b32c76c83725ed4d9918e362e
 Source1:	https://raw.github.com/pypa/virtualenv/%{version}/bin/rebuild-script.py
 # Source1-md5:	5925c9a7d8e8b101c76b9c6cfa9ff297
 Source2:	unpack-support.py
@@ -54,6 +54,9 @@ Project. Zostało wydane na liberalnej licencji w stylu MIT.
 %build
 %{__python} setup.py build
 
+cd docs
+%{__make} text
+
 %install
 rm -rf $RPM_BUILD_ROOT
 %{__python} setup.py install \
@@ -69,11 +72,10 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
-%doc docs/index.txt
+%doc docs/_build/text/*.txt
 %attr(755,root,root) %{_bindir}/virtualenv
 %{py_sitescriptdir}/virtualenv-%{version}-py*.egg-info
 %{py_sitescriptdir}/virtualenv.py*
 %dir %{py_sitescriptdir}/virtualenv_support
 %{py_sitescriptdir}/virtualenv_support/__init__.py*
 %{py_sitescriptdir}/virtualenv_support/*.gz
-%{py_sitescriptdir}/virtualenv_support/setuptools-*.egg
