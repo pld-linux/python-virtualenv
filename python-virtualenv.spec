@@ -13,8 +13,8 @@ Source2:	unpack-support.py
 Patch0:		virtualenv-pld.patch
 Patch1:		virtualenv-rebuild-support.patch
 URL:		http://pypi.python.org/pypi/virtualenv
-BuildRequires:	python
-BuildRequires:	python-modules
+BuildRequires:	python >= 1:2.6
+BuildRequires:	python-modules >= 1:2.6
 BuildRequires:	rpm-pythonprov
 Requires:	python-setuptools
 # Blame binary-only python packages authors
