@@ -1,6 +1,6 @@
 --- virtualenv-1.8.4/virtualenv.py.orig	2012-11-25 18:11:26.000000000 +0100
 +++ virtualenv-1.8.4/virtualenv.py	2013-01-11 18:31:34.212018758 +0100
-@@ -72,7 +72,11 @@
+@@ -72,7 +72,12 @@
                      'fnmatch', 'locale', 'encodings', 'codecs',
                      'stat', 'UserDict', 'readline', 'copy_reg', 'types',
                      're', 'sre', 'sre_parse', 'sre_constants', 'sre_compile',
@@ -9,7 +9,8 @@
 +                    '_collections', 'operator', 'itertools', 'math', 'binascii', 'atexit',
 +                    '_random', '_io', '_functools', 'array', '_socket', '_ssl', 'select',
 +                    'fcntl', 'cPickle', 'datetime', 'syslog', '_sqlite3', 'unicodedata',
-+                    'parser', 'simplejson', 'multiprocessing', '_multiprocessing', '_posixsubprocess']
++                    'parser', 'simplejson', 'multiprocessing', '_multiprocessing',
++                    '_posixsubprocess', '_csv']
  
  REQUIRED_FILES = ['lib-dynload', 'config']
  

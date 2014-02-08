@@ -1,12 +1,12 @@
 Summary:	Tool to create isolated Python environments
 Summary(pl.UTF-8):	Narzędzie do tworzenia oddzielonych środowisk Pythona
 Name:		python-virtualenv
-Version:	1.10.1
+Version:	1.11.2
 Release:	1
 License:	MIT
 Group:		Development/Languages
 Source0:	http://pypi.python.org/packages/source/v/virtualenv/virtualenv-%{version}.tar.gz
-# Source0-md5:	3a04aa2b32c76c83725ed4d9918e362e
+# Source0-md5:	d3d915836c1ada1be731ccaa12412b98
 Source1:	https://raw.github.com/pypa/virtualenv/%{version}/bin/rebuild-script.py
 # Source1-md5:	5925c9a7d8e8b101c76b9c6cfa9ff297
 Source2:	unpack-support.py
@@ -65,8 +65,7 @@ rm -rf $RPM_BUILD_ROOT
 
 # not needed
 %{__rm} $RPM_BUILD_ROOT%{_bindir}/virtualenv-*.*
-%{__rm} $RPM_BUILD_ROOT%{py_sitescriptdir}/virtualenv_support/[ades]*.py*
-
+%{__rm} $RPM_BUILD_ROOT%{py_sitescriptdir}/virtualenv_support/[ads]*.py{,c,o}
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -78,4 +77,4 @@ rm -rf $RPM_BUILD_ROOT
 %{py_sitescriptdir}/virtualenv.py*
 %dir %{py_sitescriptdir}/virtualenv_support
 %{py_sitescriptdir}/virtualenv_support/__init__.py*
-%{py_sitescriptdir}/virtualenv_support/*.gz
+%{py_sitescriptdir}/virtualenv_support/*.whl
