@@ -1,18 +1,18 @@
 Summary:	Tool to create isolated Python environments
 Summary(pl.UTF-8):	Narzędzie do tworzenia oddzielonych środowisk Pythona
 Name:		python-virtualenv
-Version:	1.11.2
+Version:	1.11.4
 Release:	1
 License:	MIT
 Group:		Development/Languages
-Source0:	http://pypi.python.org/packages/source/v/virtualenv/virtualenv-%{version}.tar.gz
-# Source0-md5:	d3d915836c1ada1be731ccaa12412b98
+Source0:	https://pypi.python.org/packages/source/v/virtualenv/virtualenv-%{version}.tar.gz
+# Source0-md5:	9accc2d3f0ec1da479ce2c3d1fdff06e
 Source1:	https://raw.github.com/pypa/virtualenv/%{version}/bin/rebuild-script.py
 # Source1-md5:	5925c9a7d8e8b101c76b9c6cfa9ff297
 Source2:	unpack-support.py
 Patch0:		virtualenv-pld.patch
 Patch1:		virtualenv-rebuild-support.patch
-URL:		http://pypi.python.org/pypi/virtualenv
+URL:		https://pypi.python.org/pypi/virtualenv
 BuildRequires:	python >= 1:2.6
 BuildRequires:	python-modules >= 1:2.6
 BuildRequires:	rpm-pythonprov
@@ -65,7 +65,8 @@ rm -rf $RPM_BUILD_ROOT
 
 # not needed
 %{__rm} $RPM_BUILD_ROOT%{_bindir}/virtualenv-*.*
-%{__rm} $RPM_BUILD_ROOT%{py_sitescriptdir}/virtualenv_support/[ads]*.py{,c,o}
+%{__rm} $RPM_BUILD_ROOT%{py_sitescriptdir}/virtualenv_support/[ads]*.py{,[co]}
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
