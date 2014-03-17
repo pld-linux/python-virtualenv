@@ -10,7 +10,7 @@
 +                    '_random', '_io', '_functools', 'array', '_socket', '_ssl', 'select',
 +                    'fcntl', 'cPickle', 'datetime', 'syslog', '_sqlite3', 'unicodedata',
 +                    'parser', 'simplejson', 'multiprocessing', '_multiprocessing',
-+                    '_posixsubprocess', '_csv']
++                    '_posixsubprocess', '_csv', 'pyexpat']
  
  REQUIRED_FILES = ['lib-dynload', 'config']
  
