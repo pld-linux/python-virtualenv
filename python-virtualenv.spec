@@ -1,14 +1,12 @@
 Summary:	Tool to create isolated Python environments
 Summary(pl.UTF-8):	Narzędzie do tworzenia oddzielonych środowisk Pythona
 Name:		python-virtualenv
-Version:	1.11.6
-Release:	2
+Version:	12.0.4
+Release:	1
 License:	MIT
 Group:		Development/Languages
 Source0:	https://pypi.python.org/packages/source/v/virtualenv/virtualenv-%{version}.tar.gz
-# Source0-md5:	f61cdd983d2c4e6aeabb70b1060d6f49
-Source1:	https://raw.github.com/pypa/virtualenv/%{version}/bin/rebuild-script.py
-# Source1-md5:	5925c9a7d8e8b101c76b9c6cfa9ff297
+# Source0-md5:	ce7c4025516806b791bbd5b4ff6c4b84
 Source2:	unpack-support.py
 Patch0:		virtualenv-pld.patch
 Patch1:		virtualenv-rebuild-support.patch
@@ -40,8 +38,6 @@ Project. Zostało wydane na liberalnej licencji w stylu MIT.
 
 %prep
 %setup -q -n virtualenv-%{version}
-%{__install} -d bin
-%{__install} -m 755 -p %{SOURCE1} bin/
 %{__install} -m 755 -p %{SOURCE2} bin/
 %patch1 -p1
 

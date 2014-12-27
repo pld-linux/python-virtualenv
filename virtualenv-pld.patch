@@ -1,6 +1,6 @@
---- virtualenv-1.8.4/virtualenv.py.orig	2012-11-25 18:11:26.000000000 +0100
-+++ virtualenv-1.8.4/virtualenv.py	2013-01-11 18:31:34.212018758 +0100
-@@ -72,7 +72,71 @@
+--- virtualenv-12.0.4/virtualenv.py.orig	2014-12-24 03:58:14.000000000 +0100
++++ virtualenv-12.0.4/virtualenv.py	2014-12-27 10:26:19.257987307 +0100
+@@ -110,7 +110,71 @@
                      'fnmatch', 'locale', 'encodings', 'codecs',
                      'stat', 'UserDict', 'readline', 'copy_reg', 'types',
                      're', 'sre', 'sre_parse', 'sre_constants', 'sre_compile',
@@ -73,7 +73,7 @@
  
  REQUIRED_FILES = ['lib-dynload', 'config']
  
-@@ -1118,18 +1123,8 @@
+@@ -1035,18 +1099,8 @@
          inc_dir = join(home_dir, 'include')
          bin_dir = join(home_dir, 'bin')
      elif not is_win:
@@ -94,7 +94,7 @@
          bin_dir = join(home_dir, 'bin')
      return home_dir, lib_dir, inc_dir, bin_dir
  
-@@ -1234,7 +1229,6 @@
+@@ -1157,7 +1211,6 @@
      else:
          prefix = sys.prefix
      mkdir(lib_dir)
@@ -102,7 +102,7 @@
      stdlib_dirs = [os.path.dirname(os.__file__)]
      if is_win:
          stdlib_dirs.append(join(os.path.dirname(stdlib_dirs[0]), 'DLLs'))
-@@ -1267,6 +1261,15 @@
+@@ -1190,6 +1243,15 @@
          site_filename = site_filename.replace('$py.class', '.py')
      site_filename_dst = change_prefix(site_filename, home_dir)
      site_dir = os.path.dirname(site_filename_dst)
@@ -118,18 +118,18 @@
      writefile(site_filename_dst, SITE_PY)
      writefile(join(site_dir, 'orig-prefix.txt'), prefix)
      site_packages_filename = join(site_dir, 'no-global-site-packages.txt')
-@@ -1304,7 +1307,7 @@
+@@ -1227,7 +1289,7 @@
          elif is_jython:
              exec_dir = join(sys.exec_prefix, 'Lib')
          else:
 -            exec_dir = join(sys.exec_prefix, 'lib', py_version)
 +            exec_dir = join(sys.exec_prefix, sys.lib, py_version)
          for fn in os.listdir(exec_dir):
-             copyfile(join(exec_dir, fn), join(lib_dir, fn))
+             copyfile(join(exec_dir, fn), join(lib_dir, fn), symlink)
  
-@@ -1616,35 +1619,6 @@
-                     cp_or_ln(os.path.abspath(os.path.join(home_dir, subdir_name)), \
-                                                             os.path.join(local_path, subdir_name))
+@@ -1549,37 +1611,6 @@
+                     copyfile(os.path.abspath(os.path.join(home_dir, subdir_name)), \
+                                                             os.path.join(local_path, subdir_name), symlink)
  
 -def fix_lib64(lib_dir, symlink=True):
 -    """
@@ -157,21 +157,17 @@
 -            "Unexpected parent dir: %r" % lib_parent)
 -        if os.path.lexists(lib64_link):
 -            return
--        cp_or_ln = (os.symlink if symlink else copyfile)
--        cp_or_ln('lib', lib64_link)
+-        if symlink:
+-            os.symlink('lib', lib64_link)
+-        else:
+-            copyfile('lib', lib64_link)
 -
  def resolve_interpreter(exe):
      """
      If the executable given isn't an absolute path, search $PATH for the interpreter
---- virtualenv-1.8.4/virtualenv_support/site.py.orig	2013-01-11 17:58:03.708727329 +0100
-+++ virtualenv-1.8.4/virtualenv_support/site.py	2013-01-11 18:39:25.132008943 +0100
-@@ -226,42 +226,25 @@
-                                 os.path.join(prefix, "Extras", "lib", "python")]
- 
-                 else: # any other Python distros on OSX work this way
--                    sitedirs = [os.path.join(prefix, "lib",
-+                    sitedirs = [os.path.join(prefix, sys.lib,
-                                              "python" + sys.version[:3], "site-packages")]
+--- virtualenv-12.0.4/virtualenv_support/site.py.orig	2014-12-27 10:00:19.374719042 +0100
++++ virtualenv-12.0.4/virtualenv_support/site.py	2014-12-27 10:28:33.224647961 +0100
+@@ -231,37 +231,20 @@
  
              elif os.sep == '/':
                  sitedirs = [os.path.join(prefix,
@@ -196,6 +192,9 @@
                  except AttributeError:
                      pass
 -                # Debian-specific dist-packages directories:
+-                sitedirs.append(os.path.join(prefix, "local/lib",
+-                                             "python" + sys.version[:3],
+-                                             "dist-packages"))
 -                if sys.version[0] == '2':
 -                    sitedirs.append(os.path.join(prefix, "lib",
 -                                                 "python" + sys.version[:3],
@@ -204,9 +203,6 @@
 -                    sitedirs.append(os.path.join(prefix, "lib",
 -                                                 "python" + sys.version[0],
 -                                                 "dist-packages"))
--                sitedirs.append(os.path.join(prefix, "local/lib",
--                                             "python" + sys.version[:3],
--                                             "dist-packages"))
 -                sitedirs.append(os.path.join(prefix, "lib", "dist-python"))
 +                # PLD-specific noarch directory:
 +                sitedirs.append(os.path.join(prefix, "share",
@@ -214,7 +210,7 @@
              else:
                  sitedirs = [prefix, os.path.join(prefix, "lib", "site-packages")]
              if sys.platform == 'darwin':
-@@ -577,14 +560,9 @@
+@@ -581,14 +564,9 @@
      elif sys.platform == 'win32':
          paths = [os.path.join(sys.real_prefix, 'Lib'), os.path.join(sys.real_prefix, 'DLLs')]
      else:
@@ -231,7 +227,7 @@
          # This is hardcoded in the Python executable, but relative to
          # sys.prefix.  Debian change: we need to add the multiarch triplet
          # here, which is where the real stuff lives.  As per PEP 421, in
-@@ -595,7 +573,7 @@
+@@ -599,7 +577,7 @@
          except AttributeError:
              # This is a non-multiarch aware Python.  Fallback to the old way.
              arch = sys.platform
