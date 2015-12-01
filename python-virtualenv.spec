@@ -1,7 +1,6 @@
 #
 # Conditional build:
 %bcond_without	doc	# don't build doc
-%bcond_with	tests	# do perform tests (does not work)
 %bcond_without	python2 # CPython 2.x module
 %bcond_without	python3 # CPython 3.x module
 
@@ -10,23 +9,20 @@ Summary:	Tool to create isolated Python environments
 Summary(pl.UTF-8):	Narzędzie do tworzenia oddzielonych środowisk Pythona
 Name:		python-virtualenv
 Version:	13.1.2
-Release:	2
+Release:	3
 License:	MIT
 Group:		Development/Languages
 Source0:	https://pypi.python.org/packages/source/v/virtualenv/virtualenv-%{version}.tar.gz
 # Source0-md5:	b989598f068d64b32dead530eb25589a
-Source2:	unpack-support.py
-Patch0:		virtualenv-pld.patch
-Patch1:		virtualenv-rebuild-support.patch
 URL:		https://pypi.python.org/pypi/virtualenv
 %if %{with python2}
 BuildRequires:	python >= 1:2.6
-BuildRequires:	python-modules >= 1:2.6
+BuildRequires:	python-modules >= 1:2.7.10-6
 BuildRequires:	python-setuptools
 %endif
 %if %{with python3}
 BuildRequires:	python3
-BuildRequires:	python3-modules
+BuildRequires:	python3-modules >= 1:3.5.0-6
 BuildRequires:	python3-setuptools
 %endif
 BuildRequires:	rpm-pythonprov
@@ -71,24 +67,39 @@ Jest to następca workignenv i rozszerzenie virtual-pythona. Jest
 tworzone przez Iana Bickinga i sponsorowane przez Open Planning
 Project. Zostało wydane na liberalnej licencji w stylu MIT.
 
+%package -n virtualenv
+Summary:	Tool to create isolated Python environments
+Summary(pl.UTF-8):	Narzędzie do tworzenia oddzielonych środowisk Pythona
+Group:		Libraries/Python
+%if %{with python3}
+Requires:	python3-virtualenv = %{version}-%{release}
+%else
+Requires:	python-virtualenv = %{version}-%{release}
+%endif
+
+%description -n virtualenv
+virtualenv is a tool to create isolated Python environments.
+virtualenv is a successor to workingenv, and an extension of
+virtual-python. It is written by Ian Bicking, and sponsored by the
+Open Planning Project. It is licensed under an MIT-style permissive
+license.
+
+%description -n virtualenv -l pl.UTF-8
+virtualenv to narzędzie do tworzenia oddzielonych środowisk Pythona.
+Jest to następca workignenv i rozszerzenie virtual-pythona. Jest
+tworzone przez Iana Bickinga i sponsorowane przez Open Planning
+Project. Zostało wydane na liberalnej licencji w stylu MIT.
+
 %prep
 %setup -q -n virtualenv-%{version}
-install -p -p %{SOURCE2} bin
-%patch1 -p1
-
-%{__python} ./bin/unpack-support.py
-
-%patch0 -p1
-
-%{__python} ./bin/rebuild-script.py
 
 %build
 %if %{with python2}
-%py_build %{?with_tests:test}
+%py_build
 %endif
 
 %if %{with python3}
-%py3_build %{?with_tests:test}
+%py3_build
 %endif
 
 %if %{with doc}
@@ -99,12 +110,12 @@ cd docs
 %install
 rm -rf $RPM_BUILD_ROOT
 
-%if %{with python3}
-%py3_install
-%endif
-
 %if %{with python2}
 %py_install
+%endif
+
+%if %{with python3}
+%py3_install
 %endif
 
 %clean
@@ -114,7 +125,6 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(644,root,root,755)
 %doc docs/_build/text/*.txt
-%attr(755,root,root) %{_bindir}/virtualenv
 %attr(755,root,root) %{_bindir}/virtualenv-2.*
 %{py_sitescriptdir}/virtualenv-%{version}-py*.egg-info
 %{py_sitescriptdir}/virtualenv.py*
@@ -127,11 +137,7 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with python3}
 %files -n python3-%{module}
 %defattr(644,root,root,755)
-
 %doc docs/_build/text/*.txt
-%if %{without python2}
-%attr(755,root,root) %{_bindir}/virtualenv
-%endif
 %attr(755,root,root) %{_bindir}/virtualenv-3.*
 %{py3_sitescriptdir}/virtualenv-%{version}-py*.egg-info
 %{py3_sitescriptdir}/__pycache__/virtualenv*
@@ -141,3 +147,7 @@ rm -rf $RPM_BUILD_ROOT
 %{py3_sitescriptdir}/virtualenv_support/*.whl
 %{py3_sitescriptdir}/virtualenv_support/__pycache__
 %endif
+
+%files -n virtualenv
+%defattr(644,root,root,755)
+%attr(755,root,root) %{_bindir}/virtualenv
