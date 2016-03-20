@@ -8,12 +8,13 @@
 Summary:	Tool to create isolated Python environments
 Summary(pl.UTF-8):	Narzędzie do tworzenia oddzielonych środowisk Pythona
 Name:		python-virtualenv
-Version:	13.1.2
-Release:	3
+Version:	15.0.1
+Release:	1
 License:	MIT
 Group:		Development/Languages
+#Source0Download: https://pypi.python.org/simple/virtualenv/
 Source0:	https://pypi.python.org/packages/source/v/virtualenv/virtualenv-%{version}.tar.gz
-# Source0-md5:	b989598f068d64b32dead530eb25589a
+# Source0-md5:	28d76a0d9cbd5dc42046dd14e76a6ecc
 URL:		https://pypi.python.org/pypi/virtualenv
 %if %{with python2}
 BuildRequires:	python >= 1:2.6
@@ -26,7 +27,7 @@ BuildRequires:	python3-modules >= 1:3.5.0-6
 BuildRequires:	python3-setuptools
 %endif
 BuildRequires:	rpm-pythonprov
-BuildRequires:	rpmbuild(macros) >= 1.710
+BuildRequires:	rpmbuild(macros) >= 1.714
 Requires:	python-setuptools
 # Blame binary-only python packages authors
 # virtualenv wants *.py
@@ -112,10 +113,12 @@ rm -rf $RPM_BUILD_ROOT
 
 %if %{with python2}
 %py_install
+cp -p $RPM_BUILD_ROOT%{_bindir}/virtualenv{,-2}
 %endif
 
 %if %{with python3}
 %py3_install
+cp -p $RPM_BUILD_ROOT%{_bindir}/virtualenv{,-3}
 %endif
 
 %clean
@@ -125,7 +128,7 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(644,root,root,755)
 %doc docs/_build/text/*.txt
-%attr(755,root,root) %{_bindir}/virtualenv-2.*
+%attr(755,root,root) %{_bindir}/virtualenv-2
 %{py_sitescriptdir}/virtualenv-%{version}-py*.egg-info
 %{py_sitescriptdir}/virtualenv.py*
 %dir %{py_sitescriptdir}/virtualenv_support
@@ -138,7 +141,7 @@ rm -rf $RPM_BUILD_ROOT
 %files -n python3-%{module}
 %defattr(644,root,root,755)
 %doc docs/_build/text/*.txt
-%attr(755,root,root) %{_bindir}/virtualenv-3.*
+%attr(755,root,root) %{_bindir}/virtualenv-3
 %{py3_sitescriptdir}/virtualenv-%{version}-py*.egg-info
 %{py3_sitescriptdir}/__pycache__/virtualenv*
 %{py3_sitescriptdir}/virtualenv.py*
