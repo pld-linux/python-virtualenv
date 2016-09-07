@@ -26,6 +26,9 @@ BuildRequires:	python3
 BuildRequires:	python3-modules >= 1:3.5.0-6
 BuildRequires:	python3-setuptools
 %endif
+%if %{with doc}
+BuildRequires:	sphinx-pdg
+%endif
 BuildRequires:	rpm-pythonprov
 BuildRequires:	rpmbuild(macros) >= 1.714
 Requires:	python-setuptools
