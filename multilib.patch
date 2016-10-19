@@ -64,3 +64,32 @@
  
  def resolve_interpreter(exe):
      """
+--- virtualenv-15.0.1/virtualenv_support/site.py~	2016-10-19 09:09:07.000000000 +0200
++++ virtualenv-15.0.1/virtualenv_support/site.py	2016-10-19 09:11:26.681732254 +0200
+@@ -243,6 +243,13 @@
+                         sitedirs.insert(0, lib64_dir)
+                     else:
+                         sitedirs.append(lib64_dir)
++                libx32_dir = os.path.join(prefix, "libx32", "python" + sys.version[:3], "site-packages")
++                if (os.path.exists(libx32_dir) and
++                    os.path.realpath(libx32_dir) not in [os.path.realpath(p) for p in sitedirs]):
++                    if _is_64bit:
++                        sitedirs.append(libx32_dir)
++                    else:
++                        sitedirs.insert(0, libx32_dir)
+                 try:
+                     # sys.getobjects only available in --with-pydebug build
+                     sys.getobjects
+@@ -589,6 +596,12 @@
+                 paths.insert(0, lib64_path)
+             else:
+                 paths.append(lib64_path)
++        libx32_path = os.path.join(sys.real_prefix, 'libx32', 'python'+sys.version[:3])
++        if os.path.exists(libx32_path):
++            if _is_64bit:
++                paths.append(libx32_path)
++            else:
++                paths.insert(0, libx32_path)
+         # This is hardcoded in the Python executable, but relative to
+         # sys.prefix.  Debian change: we need to add the multiarch triplet
+         # here, which is where the real stuff lives.  As per PEP 421, in
