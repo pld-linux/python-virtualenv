@@ -1,6 +1,6 @@
 #
 # Conditional build:
-%bcond_without	doc	# don't build doc
+%bcond_without	doc	# Sphinx documentation
 %bcond_without	python2 # CPython 2.x module
 %bcond_without	python3 # CPython 3.x module
 
@@ -8,13 +8,13 @@
 Summary:	Tool to create isolated Python environments
 Summary(pl.UTF-8):	Narzędzie do tworzenia oddzielonych środowisk Pythona
 Name:		python-virtualenv
-Version:	15.0.1
-Release:	4
+Version:	15.1.0
+Release:	1
 License:	MIT
 Group:		Development/Languages
 #Source0Download: https://pypi.python.org/simple/virtualenv/
-Source0:	https://pypi.python.org/packages/source/v/virtualenv/virtualenv-%{version}.tar.gz
-# Source0-md5:	28d76a0d9cbd5dc42046dd14e76a6ecc
+Source0:	https://files.pythonhosted.org/packages/source/v/virtualenv/virtualenv-%{version}.tar.gz
+# Source0-md5:	44e19f4134906fe2d75124427dc9b716
 Source1:	unpack-support.py
 Patch0:		multilib.patch
 Patch1:		rebuild-support.patch
@@ -34,11 +34,11 @@ BuildRequires:	sphinx-pdg
 %endif
 BuildRequires:	rpm-pythonprov
 BuildRequires:	rpmbuild(macros) >= 1.714
-Requires:	python-setuptools
 # Blame binary-only python packages authors
 # virtualenv wants *.py
-Requires:	python-devel-src
-Suggests:	gcc
+Requires:	python-devel-src >= 1:2.6
+# for virtualenv-2 wrapper
+Requires:	python-setuptools
 BuildArch:	noarch
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -59,7 +59,9 @@ Project. Zostało wydane na liberalnej licencji w stylu MIT.
 Summary:	Tool to create isolated Python environments
 Summary(pl.UTF-8):	Narzędzie do tworzenia oddzielonych środowisk Pythona
 Group:		Libraries/Python
-Requires:	python3-modules
+Requires:	python3-modules >= 1:3.3
+# for virtualenv-3 wrapper
+Requires:	python3-setuptools
 
 %description -n python3-%{module}
 virtualenv is a tool to create isolated Python environments.
@@ -99,7 +101,7 @@ Project. Zostało wydane na liberalnej licencji w stylu MIT.
 
 %prep
 %setup -q -n virtualenv-%{version}
-install -p -p %{SOURCE1} bin
+install -p %{SOURCE1} bin
 %{__python} ./bin/unpack-support.py
 %patch0 -p1
 %patch1 -p1
@@ -115,8 +117,7 @@ install -p -p %{SOURCE1} bin
 %endif
 
 %if %{with doc}
-cd docs
-%{__make} text
+%{__make} -C docs text
 %endif
 
 %install
