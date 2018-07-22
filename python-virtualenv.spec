@@ -1,6 +1,7 @@
 #
 # Conditional build:
 %bcond_without	doc	# Sphinx documentation
+%bcond_without	tests	# pytest tests
 %bcond_without	python2 # CPython 2.x module
 %bcond_without	python3 # CPython 3.x module
 
@@ -8,26 +9,32 @@
 Summary:	Tool to create isolated Python environments
 Summary(pl.UTF-8):	Narzędzie do tworzenia oddzielonych środowisk Pythona
 Name:		python-virtualenv
-Version:	15.1.0
-Release:	2
+Version:	16.0.0
+Release:	1
 License:	MIT
 Group:		Development/Languages
-#Source0Download: https://pypi.python.org/simple/virtualenv/
+#Source0Download: https://pypi.org/simple/virtualenv/
 Source0:	https://files.pythonhosted.org/packages/source/v/virtualenv/virtualenv-%{version}.tar.gz
-# Source0-md5:	44e19f4134906fe2d75124427dc9b716
+# Source0-md5:	4feb74ee26255dd7e62e36ce96bcc4c6
 Source1:	unpack-support.py
 Patch0:		multilib.patch
 Patch1:		rebuild-support.patch
-URL:		https://pypi.python.org/pypi/virtualenv
+URL:		https://pypi.org/project/virtualenv/
 %if %{with python2}
-BuildRequires:	python >= 1:2.6
+BuildRequires:	python >= 1:2.7
 BuildRequires:	python-modules >= 1:2.7.10-6
 BuildRequires:	python-setuptools
+%if %{with tests}
+BuildRequires:	python-pytest
+%endif
 %endif
 %if %{with python3}
-BuildRequires:	python3
+BuildRequires:	python3 >= 1:3.4
 BuildRequires:	python3-modules >= 1:3.5.0-6
 BuildRequires:	python3-setuptools
+%if %{with tests}
+BuildRequires:	python3-pytest
+%endif
 %endif
 %if %{with doc}
 BuildRequires:	sphinx-pdg
@@ -36,7 +43,7 @@ BuildRequires:	rpm-pythonprov
 BuildRequires:	rpmbuild(macros) >= 1.714
 # Blame binary-only python packages authors
 # virtualenv wants *.py
-Requires:	python-devel-src >= 1:2.6
+Requires:	python-devel-src >= 1:2.7
 # for virtualenv-2 wrapper
 Requires:	python-setuptools
 BuildArch:	noarch
@@ -59,7 +66,7 @@ Project. Zostało wydane na liberalnej licencji w stylu MIT.
 Summary:	Tool to create isolated Python environments
 Summary(pl.UTF-8):	Narzędzie do tworzenia oddzielonych środowisk Pythona
 Group:		Libraries/Python
-Requires:	python3-modules >= 1:3.3
+Requires:	python3-modules >= 1:3.4
 # for virtualenv-3 wrapper
 Requires:	python3-setuptools
 
@@ -109,11 +116,11 @@ install -p %{SOURCE1} bin
 
 %build
 %if %{with python2}
-%py_build
+%py_build %{?with_tests:test}
 %endif
 
 %if %{with python3}
-%py3_build
+%py3_build %{?with_tests:test}
 %endif
 
 %if %{with doc}
@@ -139,7 +146,7 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with python2}
 %files
 %defattr(644,root,root,755)
-%doc docs/_build/text/*.txt
+%doc AUTHORS.txt LICENSE.txt README.rst docs/_build/text/*.txt
 %attr(755,root,root) %{_bindir}/virtualenv-2
 %{py_sitescriptdir}/virtualenv-%{version}-py*.egg-info
 %{py_sitescriptdir}/virtualenv.py*
@@ -152,7 +159,7 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with python3}
 %files -n python3-%{module}
 %defattr(644,root,root,755)
-%doc docs/_build/text/*.txt
+%doc AUTHORS.txt LICENSE.txt README.rst docs/_build/text/*.txt
 %attr(755,root,root) %{_bindir}/virtualenv-3
 %{py3_sitescriptdir}/virtualenv-%{version}-py*.egg-info
 %{py3_sitescriptdir}/__pycache__/virtualenv*
