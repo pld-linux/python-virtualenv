@@ -55,8 +55,9 @@
 -    if os.path.lexists(lib64_link):
 +    if os.path.lexists(libarch_link):
          return
-     if symlink:
+-    if symlink:
 -        os.symlink('lib', lib64_link)
++    if True:
 +        os.symlink('lib', libarch_link)
      else:
 -        copyfile('lib', lib64_link)
@@ -93,3 +94,14 @@
          # This is hardcoded in the Python executable, but relative to
          # sys.prefix.  Debian change: we need to add the multiarch triplet
          # here, which is where the real stuff lives.  As per PEP 421, in
+--- virtualenv-16.0.0/tests/test_virtualenv.py.orig	2018-05-17 01:36:07.000000000 +0200
++++ virtualenv-16.0.0/tests/test_virtualenv.py	2018-07-23 21:40:47.981924463 +0200
+@@ -135,6 +135,8 @@
+         for root, dirs, files in os.walk(tmp_virtualenv):
+             for f in files + dirs:
+                 full_name = os.path.join(root, f)
++                if os.path.islink(full_name) and os.readlink(full_name) == "lib":
++                    continue
+                 assert not os.path.islink(full_name), "%s should not be a" \
+                     " symlink (to %s)" % (full_name, os.readlink(full_name))
+     finally:

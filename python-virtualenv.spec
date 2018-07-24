@@ -10,7 +10,7 @@ Summary:	Tool to create isolated Python environments
 Summary(pl.UTF-8):	Narzędzie do tworzenia oddzielonych środowisk Pythona
 Name:		python-virtualenv
 Version:	16.0.0
-Release:	1
+Release:	2
 License:	MIT
 Group:		Development/Languages
 #Source0Download: https://pypi.org/simple/virtualenv/
