@@ -22,8 +22,12 @@ BuildRequires:	python >= 1:2.7
 BuildRequires:	python-modules >= 1:2.7.10-6
 BuildRequires:	python-setuptools
 %if %{with tests}
-BuildRequires:	python-platformdirs
+BuildRequires:	python-distlib >= 0.3.1
+BuildRequires:	python-filelock >= 3.2
+BuildRequires:	python-pathlib2 >= 2.3.3
+BuildRequires:	python-platformdirs >= 2
 BuildRequires:	python-pytest
+BuildRequires:	python-six >= 1.9
 %endif
 %endif
 %if %{with python3}
@@ -31,8 +35,11 @@ BuildRequires:	python3 >= 1:3.4
 BuildRequires:	python3-modules >= 1:3.5.0-6
 BuildRequires:	python3-setuptools
 %if %{with tests}
-BuildRequires:	python3-platformdirs
+BuildRequires:	python3-distlib >= 0.3.1
+BuildRequires:	python3-filelock >= 3.2
+BuildRequires:	python3-platformdirs >= 2
 BuildRequires:	python3-pytest
+BuildRequires:	python3-six >= 1.9
 %endif
 %endif
 %if %{with doc}
