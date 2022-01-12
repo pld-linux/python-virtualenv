@@ -24,6 +24,7 @@ BuildRequires:	python-setuptools
 %if %{with tests}
 BuildRequires:	python-distlib >= 0.3.1
 BuildRequires:	python-filelock >= 3.2
+BuildRequires:	python-importlib_resources >= 1
 BuildRequires:	python-pathlib2 >= 2.3.3
 BuildRequires:	python-platformdirs >= 2
 BuildRequires:	python-pytest
