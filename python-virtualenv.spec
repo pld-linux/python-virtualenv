@@ -1,6 +1,6 @@
 #
 # Conditional build:
-%bcond_without	doc	# Sphinx documentation
+%bcond_with	doc	# Sphinx documentation
 %bcond_without	tests	# pytest tests
 %bcond_without	python2 # CPython 2.x module
 %bcond_without	python3 # CPython 3.x module
@@ -9,16 +9,13 @@
 Summary:	Tool to create isolated Python environments
 Summary(pl.UTF-8):	Narzędzie do tworzenia oddzielonych środowisk Pythona
 Name:		python-virtualenv
-Version:	16.0.0
-Release:	4
+Version:	20.13.0
+Release:	1
 License:	MIT
 Group:		Development/Languages
 #Source0Download: https://pypi.org/simple/virtualenv/
 Source0:	https://files.pythonhosted.org/packages/source/v/virtualenv/virtualenv-%{version}.tar.gz
-# Source0-md5:	4feb74ee26255dd7e62e36ce96bcc4c6
-Source1:	unpack-support.py
-Patch0:		multilib.patch
-Patch1:		rebuild-support.patch
+# Source0-md5:	95176f0639dc033650f0f3f9fdff299e
 URL:		https://pypi.org/project/virtualenv/
 %if %{with python2}
 BuildRequires:	python >= 1:2.7
@@ -44,8 +41,13 @@ BuildRequires:	rpmbuild(macros) >= 1.714
 # Blame binary-only python packages authors
 # virtualenv wants *.py
 Requires:	python-devel-src >= 1:2.7
+Requires:	python-distlib >= 0.3.1
+Requires:	python-filelock >= 3.2
+Requires:	python-pathlib >= 2.3.3
+Requires:	python-platformdirs >= 2
 # for virtualenv-2 wrapper
 Requires:	python-setuptools
+Requires:	python-six >= 1.9
 BuildArch:	noarch
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -66,9 +68,13 @@ Project. Zostało wydane na liberalnej licencji w stylu MIT.
 Summary:	Tool to create isolated Python environments
 Summary(pl.UTF-8):	Narzędzie do tworzenia oddzielonych środowisk Pythona
 Group:		Libraries/Python
+Requires:	python3-distlib >= 0.3.1
+Requires:	python3-filelock >= 3.2
 Requires:	python3-modules >= 1:3.4
+Requires:	python3-platformdirs >= 2
 # for virtualenv-3 wrapper
 Requires:	python3-setuptools
+Requires:	python3-six >= 1.9
 
 %description -n python3-%{module}
 virtualenv is a tool to create isolated Python environments.
@@ -108,11 +114,6 @@ Project. Zostało wydane na liberalnej licencji w stylu MIT.
 
 %prep
 %setup -q -n virtualenv-%{version}
-install -p %{SOURCE1} bin
-%{__python} ./bin/unpack-support.py
-%patch0 -p1
-%patch1 -p1
-%{__python} ./bin/rebuild-script.py
 
 %build
 %if %{with python2}
@@ -146,28 +147,19 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with python2}
 %files
 %defattr(644,root,root,755)
-%doc AUTHORS.txt LICENSE.txt README.rst docs/_build/text/*.txt
+%doc LICENSE README.md %{?with_doc:docs/_build/text/*.txt}
 %attr(755,root,root) %{_bindir}/virtualenv-2
 %{py_sitescriptdir}/virtualenv-%{version}-py*.egg-info
-%{py_sitescriptdir}/virtualenv.py*
-%dir %{py_sitescriptdir}/virtualenv_support
-%{py_sitescriptdir}/virtualenv_support/*.py
-%{py_sitescriptdir}/virtualenv_support/*.py[co]
-%{py_sitescriptdir}/virtualenv_support/*.whl
+%{py_sitescriptdir}/virtualenv
 %endif
 
 %if %{with python3}
 %files -n python3-%{module}
 %defattr(644,root,root,755)
-%doc AUTHORS.txt LICENSE.txt README.rst docs/_build/text/*.txt
+%doc LICENSE README.md %{?with_doc:docs/_build/text/*.txt}
 %attr(755,root,root) %{_bindir}/virtualenv-3
 %{py3_sitescriptdir}/virtualenv-%{version}-py*.egg-info
-%{py3_sitescriptdir}/__pycache__/virtualenv*
-%{py3_sitescriptdir}/virtualenv.py*
-%dir %{py3_sitescriptdir}/virtualenv_support
-%{py3_sitescriptdir}/virtualenv_support/*.py
-%{py3_sitescriptdir}/virtualenv_support/*.whl
-%{py3_sitescriptdir}/virtualenv_support/__pycache__
+%{py3_sitescriptdir}/virtualenv
 %endif
 
 %files -n virtualenv
