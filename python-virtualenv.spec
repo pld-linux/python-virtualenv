@@ -43,7 +43,7 @@ BuildRequires:	rpmbuild(macros) >= 1.714
 Requires:	python-devel-src >= 1:2.7
 Requires:	python-distlib >= 0.3.1
 Requires:	python-filelock >= 3.2
-Requires:	python-pathlib >= 2.3.3
+Requires:	python-pathlib2 >= 2.3.3
 Requires:	python-platformdirs >= 2
 # for virtualenv-2 wrapper
 Requires:	python-setuptools
