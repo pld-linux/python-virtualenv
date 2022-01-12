@@ -22,6 +22,7 @@ BuildRequires:	python >= 1:2.7
 BuildRequires:	python-modules >= 1:2.7.10-6
 BuildRequires:	python-setuptools
 %if %{with tests}
+BuildRequires:	python-platformdirs
 BuildRequires:	python-pytest
 %endif
 %endif
@@ -30,6 +31,7 @@ BuildRequires:	python3 >= 1:3.4
 BuildRequires:	python3-modules >= 1:3.5.0-6
 BuildRequires:	python3-setuptools
 %if %{with tests}
+BuildRequires:	python3-platformdirs
 BuildRequires:	python3-pytest
 %endif
 %endif
