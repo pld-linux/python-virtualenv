@@ -1,0 +1,31 @@
+--- virtualenv-20.13.0/src/virtualenv/create/via_global_ref/builtin/via_global_self_do.py.orig	2022-01-02 16:54:28.000000000 +0100
++++ virtualenv-20.13.0/src/virtualenv/create/via_global_ref/builtin/via_global_self_do.py	2022-01-18 22:37:40.976826916 +0100
+@@ -10,6 +10,8 @@
+ from ..api import ViaGlobalRefApi, ViaGlobalRefMeta
+ from .builtin_way import VirtualenvBuiltin
+ 
++import os
++import sys
+ 
+ class BuiltinViaGlobalRefMeta(ViaGlobalRefMeta):
+     def __init__(self):
+@@ -82,6 +83,7 @@
+                 dirs.remove(directory)
+         for directory in sorted(dirs):
+             ensure_dir(directory)
++        self.symlink_libdir()
+ 
+         self.set_pyenv_cfg()
+         self.pyenv_cfg.write()
+@@ -112,3 +114,11 @@
+         self.pyenv_cfg["base-prefix"] = self.interpreter.system_prefix
+         self.pyenv_cfg["base-exec-prefix"] = self.interpreter.system_exec_prefix
+         self.pyenv_cfg["base-executable"] = self.interpreter.system_executable
++
++    def symlink_libdir(self):
++        lib_arch = None
++        for lib in [ 'lib64', 'libx32']:
++            if any(lib in p for p in sys.path):
++                lib_arch = lib
++        if lib_arch and (self.dest / lib_arch).exists() and not (self.dest / 'lib').exists():
++            os.symlink(lib_arch, str(self.dest / 'lib'))
