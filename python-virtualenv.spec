@@ -170,7 +170,7 @@ Project. Zostało wydane na liberalnej licencji w stylu MIT.
 
 %prep
 %setup -q -n virtualenv-%{version}
-%patch0 -p1
+%patch -P 0 -p1
 
 %build
 %if %{with python2}
